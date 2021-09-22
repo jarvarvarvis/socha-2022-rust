@@ -1,0 +1,25 @@
+[package]
+name = "socha_2021_rs"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# XML serialization / deserialization
+serde = { version = "1.0.128", features = [ "derive" ] }
+quick-xml = { version = "0.22.0", features = [ "serialize" ] }
+
+# Logging
+log = { version = "0.4.14" }
+flexi_logger = { version = "0.18.0" }
+
+# getopts
+args = { version = "2.0" }
+getopts = { version = "0.2"}
+
+# rand
+rand = { version = "0.8.4" }
+
+# async stuff (very fancy)
+# async-std = { version = "0.99" }
