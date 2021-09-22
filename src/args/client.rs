@@ -20,7 +20,7 @@ impl ClientArgs {
     fn setup_args(program: &str) -> Args {
         let mut args = Args::new(
             program,
-            "A client for the game Ostseeschach (Software Challenge 2021)",
+            "A client for the game Ostseeschach (Software Challenge 2022)",
         );
         args.option(
             "h",
