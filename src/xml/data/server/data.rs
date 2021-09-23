@@ -3,21 +3,14 @@ extern crate serde;
 
 use serde::Deserialize;
 
-use crate::xml::data::enums::PlayerTeam;
+use crate::xml::data::enums::{DataClass, PlayerTeam};
 
 use super::result::{Definition, Scores, Winner};
 use super::state::State;
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Data {
-    /// Possible values for `class`:
-    /// - welcomeMessage
-    /// - memento
-    /// - moveRequest
-    /// - result
-    ///
-    /// TODO: convert this to an enum?
-    pub class: String,
+    pub class: DataClass,
 
     /// Only available when `class` is equal to `memento`
     pub state: Option<State>,

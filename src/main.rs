@@ -56,11 +56,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let opt_protocol_manager = ProtocolManager::from_args(collected_args);
     match opt_protocol_manager {
         Ok(mut protocol_manager) => match protocol_manager.join_game() {
-            ProtocolStatus::Success(_) => {
+            Ok(_) => {
                 log::info!("Starting game loop...");
                 game_loop(&mut protocol_manager);
-            }
-            ProtocolStatus::Failure(e) => {
+            },
+            Err(e) => {
                 log::error!("{:?}", e);
             }
         },

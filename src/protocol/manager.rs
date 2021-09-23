@@ -15,11 +15,6 @@ pub struct ProtocolManager {
     client_args: ClientArgs,
 }
 
-pub enum ProtocolStatus {
-    Success(usize),
-    Failure(Error),
-}
-
 impl ProtocolManager {
     fn from_valid_args(client_args: ClientArgs) -> Result<Self, Error> {
         let host = client_args.host.clone();
@@ -40,22 +35,22 @@ impl ProtocolManager {
         }
     }
 
-    pub fn send_client_side_message(&mut self, message: ClientSideMessage) -> ProtocolStatus {
-        let text = message.to_xml();
+    pub fn send_client_side_message(&mut self, message: ClientSideMessage) -> Result<usize, Error> {
+        let text = message.to_xml()?;
 
         match self.network_manager.write_text(&text) {
-            Ok(s) => ProtocolStatus::Success(s),
-            Err(e) => ProtocolStatus::Failure(e),
+            Ok(s) => Ok(s),
+            Err(e) => Err(e),
         }
     }
 
-    pub fn join_game(&mut self) -> ProtocolStatus {
+    pub fn join_game(&mut self) -> Result<usize, Error> {
         let reservation = &self.client_args.reservation;
         match reservation {
             Some(res) => {
                 let res_clone = res.clone();
                 self.send_client_side_message(
-                    ClientSideMessage::JoinPreparedGame(res_clone)
+                    ClientSideMessage::JoinPreparedGame { reservation: res_clone }
                 )
             },
             None => self.send_client_side_message(ClientSideMessage::JoinAnyGame)

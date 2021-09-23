@@ -1,9 +1,9 @@
 use std::ops::{Add, Sub};
 
-#[derive(PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Vec2<T> {
-    x: T,
-    y: T
+    pub x: T,
+    pub y: T
 }
 
 pub type Coordinates = Vec2<i32>;
