@@ -26,8 +26,9 @@ impl FromDeserializable<'_, State> for GameState {
         let pieces = deserialized_pieces
             .iter()
             .map(|piece_entry| {
-                let from_coordinates = Coordinates::from_deserializable(&piece_entry.coordinates);
-                let coordinates = from_coordinates.unwrap();
+                let from_deserialized_coordinates =
+                    Coordinates::from_deserializable(&piece_entry.coordinates);
+                let coordinates = from_deserialized_coordinates.unwrap();
 
                 let piece = &piece_entry.piece;
 
@@ -42,20 +43,14 @@ impl FromDeserializable<'_, State> for GameState {
 
         let board = Board { pieces };
 
-        let from = Coordinates {
-            x: deserialized_from.x,
-            y: deserialized_from.y,
-        };
-        let to = Coordinates {
-            x: deserialized_to.x,
-            y: deserialized_to.y,
-        };
+        let from = Coordinates::from(deserialized_from);
+        let to = Coordinates::from(deserialized_to);
         let last_move = Move { from, to };
 
         Ok(Self {
             start_team: start_team.clone(),
             board,
-            last_move
+            last_move,
         })
     }
 }
