@@ -3,21 +3,21 @@ extern crate serde;
 
 use serde::Deserialize;
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Deserialize, Clone)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum PlayerTeam {
     One,
     Two,
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Deserialize, Clone)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum PieceColor {
     Blue = 1,
     Red = 2,
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Deserialize, Clone)]
 pub enum PieceType {
     Herzmuschel,
     Moewe,
@@ -25,7 +25,7 @@ pub enum PieceType {
     Robbe,
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Deserialize, Clone)]
 pub enum DataClass {
     #[serde(rename = "welcomeMessage")]
     WelcomeMessage,

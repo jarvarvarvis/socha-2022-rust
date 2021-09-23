@@ -1,22 +1,21 @@
+use crate::util::error::Error;
 use crate::xml::data::server::data::Data;
-use crate::xml::data::{conversion::FromSerializable, enums::PlayerTeam};
+use crate::xml::data::{conversion::FromDeserializable, enums::PlayerTeam};
 
 #[derive(Debug)]
-pub struct Result {
-    pub points: (i32, i32)
+pub struct GameResult {
+    pub winner_team: PlayerTeam
 }
 
-impl Result {
-    pub fn get_points_for_team(&self, team: PlayerTeam) -> i32 {
-        match team {
-            PlayerTeam::One => self.points.0,
-            PlayerTeam::Two => self.points.1,
-        }
-    }
-}
-
-impl FromSerializable<'_, Data> for Result {
-    fn from_serializable(serializable: &Data) -> Self {
-        todo!()
+impl FromDeserializable<'_, Data> for GameResult {
+    fn from_deserializable(serializable: &Data) -> Result<Self, Error> {
+        let serializable_winner = &serializable.winner;
+        let serializable_winner_ref = serializable_winner.as_ref();
+        let winner = serializable_winner_ref.unwrap();
+        let winner_team = winner.team.clone();
+        
+        Ok(Self {
+            winner_team
+        })
     }
 }

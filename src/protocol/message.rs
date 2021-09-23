@@ -1,10 +1,10 @@
 use quick_xml::se::to_string;
 
 use crate::game::game_state::GameState;
-use crate::game::r#move::Move;
-use crate::game::result::Result as GameResult;
+use crate::game::moves::Move;
+use crate::game::result::GameResult;
 use crate::util::error::Error;
-use crate::xml::data::conversion::{FromSerializable, ToSerializable};
+use crate::xml::data::conversion::{FromDeserializable, ToSerializable};
 use crate::xml::data::enums::DataClass;
 use crate::xml::data::server::data::Received;
 
@@ -65,15 +65,19 @@ impl From<Received> for ServerSideMessage {
             },
             DataClass::Memento => {
                 let unwrapped_state = room_data.state.as_ref().unwrap();
-                let game_state = GameState::from_serializable(&unwrapped_state);
+                let game_state_conversion_result = GameState::from_deserializable(&unwrapped_state);
+                let game_state = game_state_conversion_result.unwrap();
                 ServerSideMessage::Memento { game_state }
             },
             DataClass::MoveRequest => {
                 ServerSideMessage::MoveRequest
             },
             DataClass::Result => {
-                let result = GameResult::from_serializable(room_data);
-                ServerSideMessage::Result { result }
+                let result_conversion_result = GameResult::from_deserializable(room_data);
+                match result_conversion_result {
+                    Ok(result) => ServerSideMessage::Result { result },
+                    Err(e) => todo!("Oh no")
+                }
             },
         }
     }

@@ -7,7 +7,7 @@ pub struct Piece {
     pub team: PlayerTeam,
     pub coordinates: Coordinates,
 
-    count: i32,
+    pub count: i32,
 }
 
 impl Piece {

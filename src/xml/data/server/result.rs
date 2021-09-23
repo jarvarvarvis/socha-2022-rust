@@ -8,62 +8,62 @@ use crate::xml::data::enums::{PlayerTeam};
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Aggregation {
     #[serde(rename = "$value")]
-    value: String,
+    pub value: String,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct RelevantForRanking {
     #[serde(rename = "$value")]
-    is_relevant_for_ranking: bool,
+    pub is_relevant_for_ranking: bool,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Fragment {
-    name: String,
+    pub name: String,
 
-    aggregation: Aggregation,
+    pub aggregation: Aggregation,
     #[serde(rename = "relevantForRanking")]
-    relevant_for_ranking: RelevantForRanking,
+    pub relevant_for_ranking: RelevantForRanking,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Definition {
     #[serde(rename = "fragment", default)]
-    fragments: Vec<Fragment>,
+    pub fragments: Vec<Fragment>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Player {
-    team: PlayerTeam,
+    pub team: PlayerTeam,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Part {
     #[serde(rename = "$value")]
-    value: i32,
+    pub value: i32,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Score {
-    cause : String,
-    reason: String,
+    pub cause : String,
+    pub reason: String,
     #[serde(rename = "part", default)]
-    parts: Vec<Part>,
+    pub parts: Vec<Part>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct ScoresEntry {
-    player: Player,
-    score: Score,
+    pub player: Player,
+    pub score: Score,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Scores {
     #[serde(rename = "entry", default)]
-    entries: Vec<ScoresEntry>,
+    pub entries: Vec<ScoresEntry>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Winner {
-    team: PlayerTeam,
+    pub team: PlayerTeam,
 }

@@ -1,5 +1,11 @@
 use std::ops::{Add, Sub};
 
+use crate::xml::data::conversion::FromDeserializable;
+
+use crate::xml::data::server::state::Coordinates as XmlCoordinates;
+
+use super::error::Error;
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct Vec2<T> {
     pub x: T,
@@ -27,5 +33,14 @@ impl Sub for Coordinates {
             x: self.x + other.x,
             y: self.y + other.y
         }
+    }
+}
+
+impl FromDeserializable<'_, XmlCoordinates> for Coordinates {
+    fn from_deserializable(serializable: &XmlCoordinates) -> Result<Self, Error> {
+        Ok(Self {
+            x: serializable.x,
+            y: serializable.y
+        })
     }
 }

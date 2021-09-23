@@ -1,11 +1,13 @@
 use serde::{Deserialize, Serialize};
 
+use crate::util::error::Error;
+
 pub trait ToSerializable<To> 
 where To: Serialize {
     fn to_serializable(&self) -> To;
 }
 
-pub trait FromSerializable<'de, From>
-where From: Deserialize<'de> {
-    fn from_serializable(serializable: &From) -> Self;
+pub trait FromDeserializable<'de, From>
+where Self: Sized, From: Deserialize<'de> {
+    fn from_deserializable(serializable: &From) -> Result<Self, Error>;
 }
