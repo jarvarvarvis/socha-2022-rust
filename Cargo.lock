@@ -266,7 +266,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "socha_2021_rs"
+name = "socha_2022_rs"
 version = "0.1.0"
 dependencies = [
  "args",
