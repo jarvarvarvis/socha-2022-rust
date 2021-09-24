@@ -67,7 +67,7 @@ impl From<Received> for ServerSideMessage {
                 let room_id = &room.room_id;
                 let own_team = &room.data.color;
                 ServerSideMessage::WelcomeMessage {
-                    room_id: room_id.to_string(),
+                    room_id: String::from(room_id),
                     own_team: own_team.clone(),
                 }
             }
