@@ -8,12 +8,11 @@ pub struct GameResult {
 }
 
 impl FromDeserializable<'_, Data> for GameResult {
-    fn from_deserializable(serializable: &Data) -> Result<Self, Error> {
-        let winner_team = serializable
+    fn from_deserializable(deserializable: &Data) -> Result<Self, Error> {
+        let winner_team = deserializable
             .winner
             .as_ref()
-            .map(|winner| winner.team.clone()
-        );
+            .map(|winner| winner.team.clone());
 
         Ok(Self { winner_team })
     }

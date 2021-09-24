@@ -26,12 +26,8 @@ impl GameState {
         // Check if the moved piece belongs to the target team
         let piece_at_position = self.board.get_piece_at(coords_from);
         let piece_belongs_to_team = match piece_at_position {
-            Some(piece) => {
-                piece.team == team
-            }
-            None => {
-                false
-            }
+            Some(piece) => piece.team == team,
+            None => false,
         };
 
         // Check if the piece moves to an empty field or a field
@@ -67,21 +63,20 @@ impl GameState {
 }
 
 impl FromDeserializable<'_, State> for GameState {
-    // The XML protocol is weird
-    fn from_deserializable(serializable: &State) -> Result<Self, Error> {
-        let deserialized_start_team = &serializable.start_team;
-        let deserialized_board = &serializable.board;
+    fn from_deserializable(deserializable: &State) -> Result<Self, Error> {
+        let deserialized_start_team = &deserializable.start_team;
+        let deserialized_board = &deserializable.board;
         let board = Board::from_deserializable(deserialized_board)?;
 
         let start_team = &deserialized_start_team.team;
 
-        let last_move = serializable.last_move.as_ref().map(|last_move| {
+        let last_move = deserializable.last_move.as_ref().map(|last_move| {
             let from = Coordinates::from(&last_move.from);
             let to = Coordinates::from(&last_move.to);
             Move { from, to }
         });
 
-        let turn = serializable.turn;
+        let turn = deserializable.turn;
 
         Ok(Self {
             start_team: start_team.clone(),

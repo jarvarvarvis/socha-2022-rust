@@ -16,46 +16,49 @@ impl NetworkManager {
         let addr = format!("{}:{}", host, port);
         let stream = TcpStream::connect(addr);
         match stream {
-            Ok(s) => Ok(NetworkManager { stream: s }),
-            Err(e) => Err(Error::IOError(e)),
+            Ok(stream) => Ok(NetworkManager { stream }),
+            Err(error) => Err(Error::IOError(error)),
         }
     }
 
     pub fn write_text(&mut self, text: &str) -> Result<usize, Error> {
-        let buf = text.as_bytes();
-        let write_result = self.stream.write(&buf);
+        let text_bytes = text.as_bytes();
+        let write_result = self.stream.write(&text_bytes);
 
         match write_result {
-            Ok(s) => Ok(s),
-            Err(e) => Err(Error::IOError(e)),
+            Ok(size) => Ok(size),
+            Err(error) => Err(Error::IOError(error)),
         }
     }
 
     fn read_raw_exact(&mut self, length: usize) -> Result<Vec<u8>, Error> {
-        let mut buf = vec![0; length];
-        let read_result = self.stream.read(&mut buf);
+        let mut read_buffer = vec![0; length];
+        let read_result = self.stream.read(&mut read_buffer);
 
         match read_result {
-            Ok(_) => Ok(buf),
-            Err(e) => Err(Error::IOError(e)),
+            Ok(_) => Ok(read_buffer),
+            Err(error) => Err(Error::IOError(error)),
         }
     }
 
     pub fn read_string_exact(&mut self, length: usize) -> Result<String, Error> {
         match self.read_raw_exact(length) {
-            Ok(vec) => {
-                let from_utf8 = String::from_utf8(vec);
+            Ok(read_buffer) => {
+                let from_utf8 = String::from_utf8(read_buffer);
                 match from_utf8 {
                     Ok(s) => Ok(s),
                     Err(e) => Err(Error::FromUtf8Error(e)),
                 }
             }
-            Err(e) => Err(e),
+            Err(error) => Err(error),
         }
     }
 
-    pub fn read_string_until_condition(&mut self, condition_function: ConditionFunction) -> Result<String, Error> {
-        let mut string_cache = String::with_capacity(READ_BUFFER_SIZE * 3);
+    pub fn read_string_until_condition(
+        &mut self,
+        condition_function: ConditionFunction,
+    ) -> Result<String, Error> {
+        let mut string_buffer = String::with_capacity(READ_BUFFER_SIZE * 3);
 
         loop {
             let read_result = self.read_string_exact(READ_BUFFER_SIZE);
@@ -63,12 +66,12 @@ impl NetworkManager {
                 Ok(owned_string) => {
                     let string = owned_string.trim_matches(char::from(0));
 
-                    string_cache.push_str(string);
-                    if condition_function(&string_cache) {
-                        return Ok(string_cache);
+                    string_buffer.push_str(string);
+                    if condition_function(&string_buffer) {
+                        return Ok(string_buffer);
                     }
                 }
-                Err(e) => return Err(e),
+                Err(error) => return Err(error),
             }
         }
     }

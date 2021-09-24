@@ -47,10 +47,10 @@ impl Sub for Coordinates {
 }
 
 impl FromDeserializable<'_, XmlCoordinates> for Coordinates {
-    fn from_deserializable(serializable: &XmlCoordinates) -> Result<Self, Error> {
+    fn from_deserializable(deserializable: &XmlCoordinates) -> Result<Self, Error> {
         Ok(Self {
-            x: serializable.x,
-            y: serializable.y,
+            x: deserializable.x,
+            y: deserializable.y,
         })
     }
 }

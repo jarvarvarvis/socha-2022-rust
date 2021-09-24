@@ -82,7 +82,7 @@ pub struct AmbersEntry {
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Ambers {
     #[serde(rename = "enum-type")]
-    pub enum_type : String,
+    pub enum_type: String,
 
     #[serde(rename = "entry", default)]
     pub entries: Vec<AmbersEntry>,

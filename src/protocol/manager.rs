@@ -1,6 +1,8 @@
 extern crate quick_xml;
 extern crate serde;
 
+use std::convert::TryFrom;
+
 use crate::networking::manager::NetworkManager;
 use crate::util::error::Error;
 use crate::xml::serialization::from_str;
@@ -33,16 +35,16 @@ impl ProtocolManager {
         let text = message.to_xml()?;
 
         match self.network_manager.write_text(&text) {
-            Ok(s) => Ok(s),
-            Err(e) => Err(e),
+            Ok(size) => Ok(size),
+            Err(error) => Err(error),
         }
     }
 
     pub fn join_game(&mut self) -> Result<usize, Error> {
-        let reservation = &self.client_args.reservation;
-        match reservation {
-            Some(res) => {
-                let res_clone = res.clone();
+        let args_reservation = &self.client_args.reservation;
+        match args_reservation {
+            Some(reservation) => {
+                let res_clone = reservation.clone();
                 self.send_client_side_message(ClientSideMessage::JoinPreparedGame {
                     reservation: res_clone,
                 })
@@ -66,8 +68,8 @@ impl ProtocolManager {
     }
 
     pub fn get_next_message(&mut self) -> Result<ServerSideMessage, Error> {
-        let condition_function = |s: &String| {
-            return s.ends_with("</room>") || s.contains("<left roomId=\"");
+        let condition_function = |string_buffer: &String| {
+            return string_buffer.ends_with("</room>") || string_buffer.contains("<left roomId=\"");
         };
         let text = self
             .network_manager
@@ -75,7 +77,7 @@ impl ProtocolManager {
 
         let text = format!("<received>{}</received>", text);
         let received = from_str::<Received>(&text)?;
-        let server_side_message = ServerSideMessage::from(received);
+        let server_side_message = ServerSideMessage::try_from(received)?;
         Ok(server_side_message)
     }
 }

@@ -51,5 +51,5 @@ pub struct Received {
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Joined {
     #[serde(rename = "roomId")]
-    pub room_id: String
+    pub room_id: String,
 }

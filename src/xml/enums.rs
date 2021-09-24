@@ -41,12 +41,12 @@ impl PieceType {
         match self {
             PieceType::Herzmuschel => match player_team {
                 PlayerTeam::One => vec![
-                    Coordinates::new(1, -1),
-                    Coordinates::new(1, 1),
+                    Coordinates::new(1, -1), 
+                    Coordinates::new(1, 1)
                 ],
                 PlayerTeam::Two => vec![
-                    Coordinates::new(-1, -1),
-                    Coordinates::new(-1, 1),
+                    Coordinates::new(-1, -1), 
+                    Coordinates::new(-1, 1)
                 ],
             },
             PieceType::Moewe => match player_team {
@@ -66,7 +66,6 @@ impl PieceType {
             PieceType::Seestern => match player_team {
                 PlayerTeam::One => vec![
                     Coordinates::new(1, 0),
-
                     Coordinates::new(1, -1),
                     Coordinates::new(1, 1),
                     Coordinates::new(-1, -1),
@@ -74,38 +73,30 @@ impl PieceType {
                 ],
                 PlayerTeam::Two => vec![
                     Coordinates::new(-1, 0),
-
                     Coordinates::new(1, -1),
                     Coordinates::new(1, 1),
                     Coordinates::new(-1, -1),
                     Coordinates::new(-1, 1),
-
                 ],
             },
             PieceType::Robbe => match player_team {
                 PlayerTeam::One => vec![
                     Coordinates::new(-1, -2),
                     Coordinates::new(1, -2),
-
                     Coordinates::new(2, -1),
                     Coordinates::new(2, 1),
-
                     Coordinates::new(1, 2),
                     Coordinates::new(-1, 2),
-
                     Coordinates::new(-2, 1),
                     Coordinates::new(-2, -1),
                 ],
                 PlayerTeam::Two => vec![
                     Coordinates::new(-1, -2),
                     Coordinates::new(1, -2),
-
                     Coordinates::new(2, -1),
                     Coordinates::new(2, 1),
-
                     Coordinates::new(1, 2),
                     Coordinates::new(-1, 2),
-
                     Coordinates::new(-2, 1),
                     Coordinates::new(-2, -1),
                 ],

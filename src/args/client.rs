@@ -54,10 +54,10 @@ impl ClientArgs {
     where
         T: FromStr,
     {
-        let value = args.value_of::<T>(name);
-        match value {
-            Ok(v) => Ok(v),
-            Err(e) => Err(Error::ArgsError(e)),
+        let args_value = args.value_of::<T>(name);
+        match args_value {
+            Ok(value) => Ok(value),
+            Err(error) => Err(Error::ArgsError(error)),
         }
     }
 
@@ -65,10 +65,10 @@ impl ClientArgs {
     where
         T: FromStr,
     {
-        let value = args.optional_value_of::<T>(name);
-        match value {
-            Ok(v) => Ok(v),
-            Err(e) => Err(Error::ArgsError(e)),
+        let args_value = args.optional_value_of::<T>(name);
+        match args_value {
+            Ok(value) => Ok(value),
+            Err(error) => Err(Error::ArgsError(error)),
         }
     }
 
@@ -84,7 +84,7 @@ impl ClientArgs {
                 port,
                 reservation,
             }),
-            Err(e) => Err(Error::ParseIntError(e)),
+            Err(error) => Err(Error::ParseIntError(error)),
         }
     }
 

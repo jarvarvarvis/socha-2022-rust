@@ -12,14 +12,14 @@ pub struct Board {
 
 impl Board {
     pub fn get_piece_at(&self, coords: Coordinates) -> Option<&Piece> {
-        self.pieces.iter().find(|p| p.coordinates == coords)
+        self.pieces.iter().find(|piece| piece.coordinates == coords)
     }
 }
 
 impl FromDeserializable<'_, XmlBoard> for Board {
-    fn from_deserializable(serializable: &XmlBoard) -> Result<Self, Error> {
-        let deserialized_pieces = &serializable.pieces.entries;
-        
+    fn from_deserializable(deserializable: &XmlBoard) -> Result<Self, Error> {
+        let deserialized_pieces = &deserializable.pieces.entries;
+
         let pieces = deserialized_pieces
             .iter()
             .map(|piece_entry| {

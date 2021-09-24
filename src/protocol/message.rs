@@ -1,3 +1,5 @@
+use std::convert::TryFrom;
+
 use crate::game::game_state::GameState;
 use crate::game::moves::Move;
 use crate::game::result::GameResult;
@@ -53,10 +55,12 @@ impl ClientSideMessage {
     }
 }
 
-impl From<Received> for ServerSideMessage {
-    fn from(received: Received) -> Self {
+impl TryFrom<Received> for ServerSideMessage {
+    type Error = Error;
+
+    fn try_from(received: Received) -> Result<Self, Error> {
         match received.left {
-            Some(_) => return ServerSideMessage::Left,
+            Some(_) => return Ok(ServerSideMessage::Left),
             None => {}
         }
 
@@ -66,28 +70,23 @@ impl From<Received> for ServerSideMessage {
             DataClass::WelcomeMessage => {
                 let room_id = &room.room_id;
                 let own_team = &room.data.color;
-                ServerSideMessage::WelcomeMessage {
+                Ok(ServerSideMessage::WelcomeMessage {
                     room_id: String::from(room_id),
                     own_team: own_team.clone(),
-                }
+                })
             }
             DataClass::Memento => {
                 let unwrapped_state = room_data.state.as_ref().unwrap();
                 let game_state_conversion_result = GameState::from_deserializable(&unwrapped_state);
                 let game_state = game_state_conversion_result.unwrap();
-                ServerSideMessage::Memento { game_state }
+                Ok(ServerSideMessage::Memento { game_state })
             }
-            DataClass::MoveRequest => ServerSideMessage::MoveRequest,
+            DataClass::MoveRequest => Ok(ServerSideMessage::MoveRequest),
             DataClass::Result => {
-                let result_conversion_result = GameResult::from_deserializable(room_data);
-                match result_conversion_result {
-                    Ok(result) => ServerSideMessage::Result { result },
-                    Err(_) => panic!("This is not suppposed to happen."),
-                }
-            },
-            DataClass::Error => { 
-                ServerSideMessage::Error
+                let result = GameResult::from_deserializable(room_data)?;
+                Ok(ServerSideMessage::Result { result })
             }
+            DataClass::Error => Ok(ServerSideMessage::Error),
         }
     }
 }

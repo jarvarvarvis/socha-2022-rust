@@ -3,7 +3,7 @@ extern crate serde;
 
 use serde::Deserialize;
 
-use crate::xml::enums::{PlayerTeam};
+use crate::xml::enums::PlayerTeam;
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Aggregation {
@@ -45,7 +45,7 @@ pub struct Part {
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Score {
-    pub cause : String,
+    pub cause: String,
     pub reason: String,
     #[serde(rename = "part", default)]
     pub parts: Vec<Part>,
