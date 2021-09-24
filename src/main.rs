@@ -13,7 +13,7 @@ use std::error::Error;
 use flexi_logger::{Duplicate, FileSpec, Logger};
 use protocol::manager::*;
 
-use crate::{args::client::ClientArgs, logic::logic::process_server_side_message};
+use crate::{args::client::ClientArgs, logic::logic::Logic};
 
 fn game_loop(protocol_manager : &mut ProtocolManager) {
     // Wait for a join response from the server
@@ -23,13 +23,13 @@ fn game_loop(protocol_manager : &mut ProtocolManager) {
             log::info!("Joined game: {}", room_id);
             
             // Main protocol loop
+            let mut logic = Logic::new();
             
             loop {
                 let protocol_message = protocol_manager.get_next_message();
                 match protocol_message {
                     Ok(message) => {
-                        log::debug!("Message: {:?}", message);
-                        process_server_side_message(message);
+                        logic.process_server_side_message(protocol_manager, message);
                     },
                     Err(e) => {
                         log::error!("Error while trying to get/parse next message from the server: {:?}", e);
@@ -65,7 +65,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         },
         Err(e) => {
-            log::error!("{:?}", e);
+            log::error!("Error while client was running: {:?}", e);
         }
     }
 

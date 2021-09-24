@@ -1,19 +1,29 @@
 use std::ops::{Add, Sub};
 
-use crate::xml::data::server::state::{From as XmlFrom, To as XmlTo};
 use crate::xml::data::conversion::FromDeserializable;
+use crate::xml::data::server::state::{From as XmlFrom, To as XmlTo};
 
 use crate::xml::data::server::state::Coordinates as XmlCoordinates;
 
 use super::error::Error;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Vec2<T> {
     pub x: T,
-    pub y: T
+    pub y: T,
 }
 
 pub type Coordinates = Vec2<i32>;
+
+impl Coordinates {
+    pub fn new(x: i32, y: i32) -> Coordinates {
+        Coordinates { x, y }
+    }
+
+    pub fn in_bounds(&self) -> bool {
+        self.x >= 0 && self.x < 8 && self.y >= 0 && self.y < 8
+    }
+}
 
 impl Add for Coordinates {
     type Output = Coordinates;
@@ -21,7 +31,7 @@ impl Add for Coordinates {
     fn add(self, other: Self) -> Self::Output {
         Coordinates {
             x: self.x + other.x,
-            y: self.y + other.y
+            y: self.y + other.y,
         }
     }
 }
@@ -32,7 +42,7 @@ impl Sub for Coordinates {
     fn sub(self, other: Self) -> Self::Output {
         Coordinates {
             x: self.x + other.x,
-            y: self.y + other.y
+            y: self.y + other.y,
         }
     }
 }
@@ -41,7 +51,7 @@ impl FromDeserializable<'_, XmlCoordinates> for Coordinates {
     fn from_deserializable(serializable: &XmlCoordinates) -> Result<Self, Error> {
         Ok(Self {
             x: serializable.x,
-            y: serializable.y
+            y: serializable.y,
         })
     }
 }
@@ -57,9 +67,6 @@ impl From<&XmlFrom> for Coordinates {
 
 impl From<&XmlTo> for Coordinates {
     fn from(to: &XmlTo) -> Self {
-        Coordinates {
-            x: to.x,
-            y: to.y
-        }
+        Coordinates { x: to.x, y: to.y }
     }
 }

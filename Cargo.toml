@@ -20,6 +20,3 @@ getopts = { version = "0.2"}
 
 # rand
 rand = { version = "0.8.4" }
-
-# async stuff (very fancy)
-# async-std = { version = "0.99" }
