@@ -23,7 +23,12 @@ fn game_loop(protocol_manager: &mut ProtocolManager) -> Result<(), Error> {
 
     loop {
         let message = protocol_manager.get_next_message()?;
-        logic.process_server_side_message(protocol_manager, message);
+        match logic.process_server_side_message(protocol_manager, message) {
+            logic::logic::ClientState::Running => {}
+            logic::logic::ClientState::ShouldTerminate => {
+                return Ok(());
+            }
+        }
     }
 }
 
