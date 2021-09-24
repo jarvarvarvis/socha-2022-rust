@@ -1,73 +1,39 @@
 extern crate log;
 
 mod args;
+mod game;
+mod logic;
 mod networking;
 mod protocol;
 mod util;
 mod xml;
-mod game;
-mod logic;
 
-use std::error::Error;
-
-use flexi_logger::{Duplicate, FileSpec, Logger};
 use protocol::manager::*;
+use util::{error::Error, logger_setup::setup_logger};
 
 use crate::{args::client::ClientArgs, logic::logic::Logic};
 
-fn game_loop(protocol_manager : &mut ProtocolManager) {
+fn game_loop(protocol_manager: &mut ProtocolManager) -> Result<(), Error> {
     // Wait for a join response from the server
-    let joined_response = protocol_manager.wait_for_joined_response();
-    match joined_response {
-        Ok(room_id) => {
-            log::info!("Joined game: {}", room_id);
-            
-            // Main protocol loop
-            let mut logic = Logic::new();
-            
-            loop {
-                let protocol_message = protocol_manager.get_next_message();
-                match protocol_message {
-                    Ok(message) => {
-                        logic.process_server_side_message(protocol_manager, message);
-                    },
-                    Err(e) => {
-                        log::error!("Error while trying to get/parse next message from the server: {:?}", e);
-                        return;
-                    },
-                }
-            }
-        },
-        Err(e) => {
-            log::error!("Error while trying to join: {:?}", e);
-            return;
-        }
+    let room_id = protocol_manager.wait_for_joined_response()?;
+    log::info!("Joined game: {}", room_id);
+
+    // Main protocol loop
+    let mut logic = Logic::new();
+
+    loop {
+        let message = protocol_manager.get_next_message()?;
+        logic.process_server_side_message(protocol_manager, message);
     }
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let file_spec = FileSpec::default().directory("log/");
-    Logger::try_with_str("debug")?
-        .log_to_file(file_spec)
-        .duplicate_to_stderr(Duplicate::All)
-        .start()?;
+fn main() -> Result<(), Error> {
+    setup_logger()?;
 
-    let collected_args = ClientArgs::collect();
-    let opt_protocol_manager = ProtocolManager::from_args(collected_args);
-    match opt_protocol_manager {
-        Ok(mut protocol_manager) => match protocol_manager.join_game() {
-            Ok(_) => {
-                log::info!("Starting game loop...");
-                game_loop(&mut protocol_manager);
-            },
-            Err(e) => {
-                log::error!("{:?}", e);
-            }
-        },
-        Err(e) => {
-            log::error!("Error while client was running: {:?}", e);
-        }
-    }
-
+    let collected_args = ClientArgs::collect()?;
+    let mut protocol_manager = ProtocolManager::from_args(collected_args)?;
+    protocol_manager.join_game()?;
+    log::info!("Starting game loop...");
+    game_loop(&mut protocol_manager)?;
     Ok(())
 }

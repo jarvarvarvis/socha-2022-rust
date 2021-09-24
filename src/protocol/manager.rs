@@ -18,20 +18,15 @@ impl ProtocolManager {
     fn from_valid_args(client_args: ClientArgs) -> Result<Self, Error> {
         let host = client_args.host.clone();
         let port = client_args.port;
-        match NetworkManager::connect(host, port) {
-            Ok(network_manager) => Ok(Self {
-                network_manager,
-                client_args: client_args.clone(),
-            }),
-            Err(e) => Err(e),
-        }
+        let network_manager = NetworkManager::connect(host, port)?;
+        Ok(Self {
+            network_manager,
+            client_args: client_args.clone(),
+        })
     }
 
-    pub fn from_args(client_args: Result<ClientArgs, Error>) -> Result<Self, Error> {
-        match client_args {
-            Ok(args) => Self::from_valid_args(args),
-            Err(e) => Err(e),
-        }
+    pub fn from_args(client_args: ClientArgs) -> Result<Self, Error> {
+        Self::from_valid_args(client_args)
     }
 
     pub fn send_client_side_message(&mut self, message: ClientSideMessage) -> Result<usize, Error> {
