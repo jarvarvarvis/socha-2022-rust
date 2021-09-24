@@ -1,6 +1,6 @@
 use crate::util::error::Error;
-use crate::xml::data::server::data::Data;
-use crate::xml::data::{conversion::FromDeserializable, enums::PlayerTeam};
+use crate::xml::server::data::Data;
+use crate::xml::{conversion::FromDeserializable, enums::PlayerTeam};
 
 #[derive(Debug)]
 pub struct GameResult {

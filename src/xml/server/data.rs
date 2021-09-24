@@ -3,7 +3,7 @@ extern crate serde;
 
 use serde::Deserialize;
 
-use crate::xml::data::enums::{DataClass, PlayerTeam};
+use crate::xml::enums::{DataClass, PlayerTeam};
 
 use super::result::{Definition, Scores, Winner};
 use super::state::State;

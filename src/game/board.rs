@@ -1,8 +1,8 @@
-use crate::xml::data::server::state::Board as XmlBoard;
+use crate::xml::server::state::Board as XmlBoard;
 use crate::{
     game::piece::Piece,
     util::{coordinates::Coordinates, error::Error},
-    xml::data::conversion::FromDeserializable,
+    xml::conversion::FromDeserializable,
 };
 
 #[derive(Debug, Clone)]

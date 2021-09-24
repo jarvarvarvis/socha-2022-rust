@@ -3,7 +3,7 @@ extern crate serde;
 
 use serde::Deserialize;
 
-use crate::xml::data::enums::{PieceType, PlayerTeam};
+use crate::xml::enums::{PieceType, PlayerTeam};
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct StartTeam {

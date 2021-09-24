@@ -3,8 +3,8 @@ extern crate quick_xml;
 
 use quick_xml::de::from_str;
 
-use crate::xml::data::server::data::Received;
-use crate::{args::client::ClientArgs, xml::data::server::data::Joined};
+use crate::xml::server::data::Received;
+use crate::{args::client::ClientArgs, xml::server::data::Joined};
 use crate::networking::manager::NetworkManager;
 use crate::util::error::Error;
 

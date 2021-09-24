@@ -1,5 +1,5 @@
 use crate::util::coordinates::Coordinates;
-use crate::xml::data::enums::{PieceType, PlayerTeam};
+use crate::xml::enums::{PieceType, PlayerTeam};
 
 #[derive(Debug, Clone)]
 pub struct Piece {

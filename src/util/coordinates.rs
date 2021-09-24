@@ -1,9 +1,8 @@
 use std::ops::{Add, Sub};
 
-use crate::xml::data::conversion::FromDeserializable;
-use crate::xml::data::server::state::{From as XmlFrom, To as XmlTo};
-
-use crate::xml::data::server::state::Coordinates as XmlCoordinates;
+use crate::xml::conversion::FromDeserializable;
+use crate::xml::server::state::{From as XmlFrom, To as XmlTo};
+use crate::xml::server::state::Coordinates as XmlCoordinates;
 
 use super::error::Error;
 

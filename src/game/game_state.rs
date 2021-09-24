@@ -1,6 +1,6 @@
 use crate::util::coordinates::Coordinates;
 use crate::util::error::Error;
-use crate::xml::data::{conversion::FromDeserializable, enums::PlayerTeam, server::state::State};
+use crate::xml::{conversion::FromDeserializable, enums::PlayerTeam, server::state::State};
 
 use super::{board::Board, moves::Move};
 

@@ -3,7 +3,7 @@ extern crate serde;
 
 use serde::Deserialize;
 
-use crate::xml::data::enums::{PlayerTeam};
+use crate::xml::enums::{PlayerTeam};
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Aggregation {

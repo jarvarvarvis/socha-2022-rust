@@ -2,7 +2,7 @@ use std::process::exit;
 
 use rand::{seq::SliceRandom, thread_rng};
 
-use crate::xml::data::enums::PlayerTeam;
+use crate::xml::enums::PlayerTeam;
 use crate::protocol::{manager::ProtocolManager, message::{ClientSideMessage, ServerSideMessage}};
 use crate::game::{game_state::GameState, moves::Move};
 

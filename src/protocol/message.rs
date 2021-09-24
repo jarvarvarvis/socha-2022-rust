@@ -2,9 +2,9 @@ use crate::game::game_state::GameState;
 use crate::game::moves::Move;
 use crate::game::result::GameResult;
 use crate::util::error::Error;
-use crate::xml::data::conversion::FromDeserializable;
-use crate::xml::data::enums::{DataClass, PlayerTeam};
-use crate::xml::data::server::data::Received;
+use crate::xml::conversion::FromDeserializable;
+use crate::xml::enums::{DataClass, PlayerTeam};
+use crate::xml::server::data::Received;
 
 pub enum ClientSideMessage {
     JoinAnyGame,
