@@ -22,24 +22,8 @@ impl FromDeserializable<'_, XmlBoard> for Board {
 
         let pieces = deserialized_pieces
             .iter()
-            .map(|piece_entry| {
-                let from_deserialized_coordinates =
-                    Coordinates::from_deserializable(&piece_entry.coordinates);
-                let coordinates = from_deserialized_coordinates.unwrap();
-
-                let piece = &piece_entry.piece;
-
-                let piece_type = piece.piece_type.clone();
-                let team = piece.team.clone();
-                let count = piece.count;
-
-                Piece {
-                    piece_type,
-                    team,
-                    coordinates,
-                    count,
-                }
-            })
+            .map(Piece::from_deserializable)
+            .filter_map(|piece| piece.ok())
             .collect();
 
         Ok(Board { pieces })
