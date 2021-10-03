@@ -30,11 +30,12 @@ impl Logic {
         }
     }
 
-    fn calculate_move(&self) -> Option<Move> {
-        let game_state = self.current_game_state.as_ref()?;
+    fn calculate_move(&mut self) -> Option<Move> {
+        let game_state = self.current_game_state.as_mut()?;
         let team = self.own_team.as_ref()?;
 
         log::info!("Current turn: {}", game_state.turn);
+        log::info!("Current player: {:?}", game_state.get_current_team());
 
         let current_result = game_state.get_result();
         log::info!("Current result: {:?}", current_result);
@@ -43,7 +44,17 @@ impl Logic {
         let possible_moves = game_state.calculate_possible_moves(&team);
         let mut rng = thread_rng();
         let sent_move = possible_moves.choose(&mut rng);
-        sent_move.cloned()
+
+        let cloned_sent_move = sent_move.cloned();
+
+        let test_move = cloned_sent_move.clone()?;
+        let mut cloned_game_state = game_state.clone();
+        let _ = cloned_game_state.perform_move(&test_move);
+
+        log::debug!("Performed move: {:?}", test_move);
+        log::debug!("Previous GameState: \n{:?}, \nNew GameState: \n{:?}", game_state, cloned_game_state);
+
+        cloned_sent_move
     }
 
     fn process_move_request(&mut self, protocol_manager: &mut ProtocolManager) -> ClientState {

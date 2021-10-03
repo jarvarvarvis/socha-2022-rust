@@ -1,6 +1,5 @@
-use std::iter::Filter;
+use std::collections::HashMap;
 
-use crate::xml::enums::PlayerTeam;
 use crate::xml::server::state::Board as XmlBoard;
 use crate::{
     game::piece::Piece,
@@ -10,16 +9,27 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct Board {
-    pub pieces: Vec<Piece>,
+    pub pieces: HashMap<Coordinates, Piece>,
 }
 
 impl Board {
     pub fn get_piece_at(&self, coords: Coordinates) -> Option<&Piece> {
-        self.pieces.iter().find(|piece| piece.coordinates == coords)
+        self.pieces.get(&coords)
     }
 
-    pub fn get_pieces_for_team(&self, team: PlayerTeam) -> impl Iterator<Item = &Piece> {
-        self.pieces.iter().filter(move |piece| piece.team == team)
+    pub fn move_piece(&mut self, from: &Coordinates, to: &Coordinates) {
+        if let Some(piece) = self.pieces.remove(from) {
+            self.pieces.insert(to.clone(), piece);
+        }
+    }
+
+    pub fn get_piece_at_mut<'a>(&'a mut self, coords: Coordinates) -> Option<&'a mut Piece> {
+        self.pieces.get_mut(&coords)
+    }
+
+    pub fn get_piece_at_ref_mut<'a>(&'a mut self, coords: &Coordinates) -> Option<&'a mut Piece> {
+        let coords = coords.clone();
+        self.get_piece_at_mut(coords)
     }
 }
 
@@ -27,11 +37,14 @@ impl FromDeserializable<'_, XmlBoard> for Board {
     fn from_deserializable(deserializable: &XmlBoard) -> Result<Self, Error> {
         let deserialized_pieces = &deserializable.pieces.entries;
 
-        let pieces = deserialized_pieces
-            .iter()
-            .map(Piece::from_deserializable)
-            .filter_map(|piece| piece.ok())
-            .collect();
+        let mut pieces: HashMap<Coordinates, Piece> = HashMap::new();
+
+        for piece in deserialized_pieces.iter() {
+            let coordinates = Coordinates::from_deserializable(&piece.coordinates)?;
+            let piece = Piece::from_deserializable(piece)?;
+
+            pieces.insert(coordinates, piece);
+        }
 
         Ok(Board { pieces })
     }

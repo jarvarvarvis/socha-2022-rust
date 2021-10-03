@@ -19,6 +19,13 @@ impl PlayerTeam {
             PlayerTeam::Two => PlayerTeam::One,
         }
     }
+
+    pub fn next_n(&self, n: u32) -> Self {
+        if n & 1 == 0 {
+            return self.clone();
+        }
+        self.opponent()
+    }
 }
 
 #[derive(Debug, PartialEq, Deserialize, Clone)]

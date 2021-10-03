@@ -6,7 +6,7 @@ use crate::xml::server::state::Coordinates as XmlCoordinates;
 
 use super::error::Error;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Vec2<T> {
     pub x: T,
     pub y: T,

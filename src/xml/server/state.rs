@@ -98,5 +98,5 @@ pub struct State {
     pub last_move: Option<LastMove>,
     pub ambers: Ambers,
 
-    pub turn: i32,
+    pub turn: u32,
 }
