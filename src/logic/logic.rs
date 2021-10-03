@@ -1,3 +1,5 @@
+use std::time::{Instant};
+
 use rand::{seq::SliceRandom, thread_rng};
 
 use crate::game::{game_state::GameState, moves::Move};
@@ -31,6 +33,7 @@ impl Logic {
     }
 
     fn calculate_move(&mut self) -> Option<Move> {
+        let start_time = Instant::now();
         let game_state = self.current_game_state.as_mut()?;
         let team = self.own_team.as_ref()?;
 
@@ -54,6 +57,9 @@ impl Logic {
         log::debug!("Performed move: {:?}", test_move);
         log::debug!("Previous GameState: \n{:?}, \nNew GameState: \n{:?}", game_state, cloned_game_state);
 
+        let elapsed = start_time.elapsed();
+        log::info!("Needed {:?} to calculate move", elapsed);
+        
         cloned_sent_move
     }
 

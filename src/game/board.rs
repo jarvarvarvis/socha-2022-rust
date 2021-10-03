@@ -13,8 +13,8 @@ pub struct Board {
 }
 
 impl Board {
-    pub fn get_piece_at(&self, coords: Coordinates) -> Option<&Piece> {
-        self.pieces.get(&coords)
+    pub fn get_piece_at(&self, coords: &Coordinates) -> Option<&Piece> {
+        self.pieces.get(coords)
     }
 
     pub fn move_piece(&mut self, from: &Coordinates, to: &Coordinates) {

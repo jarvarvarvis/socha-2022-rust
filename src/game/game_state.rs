@@ -1,6 +1,3 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
-
 use crate::util::coordinates::Coordinates;
 use crate::util::error::Error;
 use crate::xml::{conversion::FromDeserializable, enums::PlayerTeam, server::state::State};
@@ -33,25 +30,17 @@ impl GameState {
     fn increment_ambers_for(&mut self, team: PlayerTeam) {
         match team {
             PlayerTeam::One => self.ambers.0 += 1,
-            PlayerTeam::Two => self.ambers.1 += 1
+            PlayerTeam::Two => self.ambers.1 += 1,
         }
     }
 
     /// This doesn't seem to be reliable in the normal game.
-    /// It looks like the server doesn't send the last game state (when one of the players wins).
+    /// It looks like the server doesn't send the last game state (when one player wins).
     ///
     /// I recommend to only use this when performing moves manually.
     pub fn get_result(&self) -> Option<PlayerTeam> {
-        if self.turn >= 59 {
-            return match self.ambers {
-                (2, 0) | (2, 1) => Some(PlayerTeam::One),
-                (0, 2) | (1, 2) => Some(PlayerTeam::Two),
-                (0, 0) | (1, 1) => {
-                    // TODO: check positions of minor pieces?
-                    None
-                }
-                (_, _) => None,
-            };
+        if self.turn >= 59 && self.ambers == (0, 0) {
+            return None;
         }
 
         match self.ambers {
@@ -60,7 +49,7 @@ impl GameState {
             (1, 1) => {
                 // TODO: check positions of minor pieces?
                 None
-            }
+            },
             (_, _) => None,
         }
     }
@@ -80,7 +69,7 @@ impl GameState {
         }
 
         // Check if the moved piece belongs to the target team
-        let piece_at_position = self.board.get_piece_at(coords_from);
+        let piece_at_position = self.board.get_piece_at(&coords_from);
         let piece_belongs_to_team = match piece_at_position {
             Some(piece) => piece.team == team,
             None => false,
@@ -88,7 +77,7 @@ impl GameState {
 
         // Check if the piece moves to an empty field or a field
         // that contains an opponent piece
-        let piece_at_target = self.board.get_piece_at(coords_to);
+        let piece_at_target = self.board.get_piece_at(&coords_to);
         let move_to_valid_field = match piece_at_target {
             Some(piece) => piece.team != team,
             None => true,
@@ -127,48 +116,47 @@ impl GameState {
     pub fn perform_move(&mut self, r#move: &Move) -> Result<(), Error> {
         let team = self.get_current_team();
         if !self.can_perform_move(r#move, team.clone()) {
-            return Err(Error::SimpleError(
-                String::from("The move couldn't be performed.")
-            ))
+            return Err(Error::SimpleError(String::from(
+                "The move couldn't be performed.",
+            )));
         }
 
         let move_from = r#move.from.clone();
-        let move_to = &r#move.to;
-        
-        // Update the ambers count and remove the moved piece if the piece at the target position is stacked.
-        // Increment the count of the moved piece if the piece at the target position is not already stacked.
-        let opt_piece_at_target = self.board.get_piece_at(move_to.clone());
-        let mut should_set_moved_piece_stacked = false;
-        let mut should_remove_moved_piece = false;
-        
-        if let Some(piece_at_target) = opt_piece_at_target {
+        let move_to = r#move.to.clone();
+
+        if let Some(piece_at_target) = self.board.get_piece_at(&move_to) {
+            // If the piece at the target position is stacked:
+            // - remove it
+            // - remove own piece
+            // - increment ambers count for own team
             if piece_at_target.is_stacked() {
+                self.board.pieces.remove(&move_to);
+                self.board.pieces.remove(&move_from);
                 self.increment_ambers_for(team);
-                should_remove_moved_piece = true;
-            } else {
-                should_set_moved_piece_stacked = true;
+            }
+            // If the piece at the target position is not stacked:
+            // - remove it
+            // - move own piece to the target position
+            // - make own piece stacked
+            else {
+                self.board.pieces.remove(&move_to);
+                self.board.move_piece(&move_from, &move_to);
+
+                if let Some(moved_piece_at_target) = self.board.get_piece_at_ref_mut(&move_to) {
+                    moved_piece_at_target.count = 2;
+                }
             }
         }
-        
-        // Update the position of the moved piece
-        self.board.move_piece(&move_from, move_to);
-
-        // Set piece stacked if necessary
-        if should_set_moved_piece_stacked {
-            let opt_moved_piece = self.board.get_piece_at_ref_mut(&move_from);
-            if let Some(moved_piece) = opt_moved_piece {
-                moved_piece.count = 2;
-            }
+        // If there is no piece at the target:
+        // - move own piece to the target position
+        else {
+            // Update the position of the moved piece
+            self.board.move_piece(&move_from, &move_to);
         }
 
-        // Remove the piece if necessary
-        if should_remove_moved_piece {
-            self.board.pieces.remove(&move_from);
-        }
-        
         // Advance the GameState
         self.advance();
-        
+
         // Set last move
         let cloned_move = r#move.clone();
         self.last_move = Some(cloned_move);
