@@ -1,5 +1,7 @@
 use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
 
+use crate::xml::enums::{PieceType, PlayerTeam};
 use crate::xml::server::state::Board as XmlBoard;
 use crate::{
     game::piece::Piece,
@@ -47,5 +49,38 @@ impl FromDeserializable<'_, XmlBoard> for Board {
         }
 
         Ok(Board { pieces })
+    }
+}
+
+impl Display for Board {
+    fn fmt(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
+        for y in 0..8 {
+            for x in 0..8 {
+                let coords = Coordinates { x, y };
+                let piece = self.get_piece_at(&coords);
+                match piece {
+                    Some(piece) => {
+                        let piece_identifier = match piece.piece_type {
+                            PieceType::Herzmuschel => "H",
+                            PieceType::Moewe => "M",
+                            PieceType::Seestern => "S",
+                            PieceType::Robbe => "R",
+                        };
+                        let team_identifier = match piece.team {
+                            PlayerTeam::One => "1",
+                            PlayerTeam::Two => "2",
+                        };
+
+                        write!(fmt, "{}{} ", piece_identifier, team_identifier)?;
+                    },
+                    None => {
+                        write!(fmt, "-- ")?;
+                    }
+                }
+            }
+            write!(fmt, "\n")?;
+        }
+
+        Ok(())
     }
 }

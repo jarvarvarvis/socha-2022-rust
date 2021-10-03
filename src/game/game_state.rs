@@ -34,12 +34,9 @@ impl GameState {
         }
     }
 
-    /// This doesn't seem to be reliable in the normal game.
-    /// It looks like the server doesn't send the last game state (when one player wins).
-    ///
-    /// I recommend to only use this when performing moves manually.
     pub fn get_result(&self) -> Option<PlayerTeam> {
         if self.turn >= 59 && self.ambers == (0, 0) {
+            // TODO: check positions of minor pieces?
             return None;
         }
 

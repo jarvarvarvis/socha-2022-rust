@@ -33,29 +33,23 @@ impl Logic {
     }
 
     fn calculate_move(&mut self) -> Option<Move> {
-        let start_time = Instant::now();
         let game_state = self.current_game_state.as_mut()?;
         let team = self.own_team.as_ref()?;
 
         log::info!("Current turn: {}", game_state.turn);
         log::info!("Current player: {:?}", game_state.get_current_team());
+        log::info!("Ambers: {:?}", game_state.ambers);
+        log::info!("Current Game State: \n{}", game_state.board);
 
         let current_result = game_state.get_result();
         log::info!("Current result: {:?}", current_result);
-        log::info!("Ambers: {:?}", game_state.ambers);
-
+        
+        let start_time = Instant::now();
         let possible_moves = game_state.calculate_possible_moves(&team);
         let mut rng = thread_rng();
         let sent_move = possible_moves.choose(&mut rng);
 
         let cloned_sent_move = sent_move.cloned();
-
-        let test_move = cloned_sent_move.clone()?;
-        let mut cloned_game_state = game_state.clone();
-        let _ = cloned_game_state.perform_move(&test_move);
-
-        log::debug!("Performed move: {:?}", test_move);
-        log::debug!("Previous GameState: \n{:?}, \nNew GameState: \n{:?}", game_state, cloned_game_state);
 
         let elapsed = start_time.elapsed();
         log::info!("Needed {:?} to calculate move", elapsed);
