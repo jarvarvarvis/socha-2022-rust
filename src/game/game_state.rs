@@ -24,18 +24,26 @@ impl GameState {
     }
 
     pub fn get_result(&self) -> Option<PlayerTeam> {
-        if self.turn >= 30 {
-            return None;
+        if self.turn >= 59 {
+            return match self.ambers {
+                (2, 0) | (2, 1) => Some(PlayerTeam::One),
+                (0, 2) | (1, 2) => Some(PlayerTeam::Two),
+                (0, 0) | (1, 1) => {
+                    // TODO: check positions of minor pieces?
+                    None
+                }, 
+                (_, _) => None
+            };
         }
 
         match self.ambers {
-            (2, _) => Some(PlayerTeam::One),
-            (_, 2) => Some(PlayerTeam::Two),
+            (2, 0) | (2, 1) => Some(PlayerTeam::One),
+            (0, 2) | (1, 2) => Some(PlayerTeam::Two),
             (1, 1) => {
-                // TODO check positions of minor pieces
+                // TODO: check positions of minor pieces?
                 None
-            }
-            (_, _) => None,
+            },
+            (_, _) => None
         }
     }
 
