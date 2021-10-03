@@ -1,6 +1,6 @@
 use crate::util::error::Error;
 use crate::xml::conversion::FromDeserializable;
-use crate::xml::enums::{MINOR_PIECES, PieceType, PlayerTeam};
+use crate::xml::enums::{LIGHT_PIECES, PieceType, PlayerTeam};
 use crate::xml::server::state::PiecesEntry as XmlPiece;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -16,8 +16,8 @@ impl Piece {
         self.count == 2
     }
 
-    pub fn is_minor_piece(&self) -> bool {
-        MINOR_PIECES.contains(&self.piece_type)
+    pub fn is_light_piece(&self) -> bool {
+        LIGHT_PIECES.contains(&self.piece_type)
     }
 }
 

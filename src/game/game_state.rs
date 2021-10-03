@@ -1,7 +1,10 @@
+use std::cmp::Ordering;
+
 use crate::util::coordinates::Coordinates;
 use crate::util::error::Error;
 use crate::xml::{conversion::FromDeserializable, enums::PlayerTeam, server::state::State};
 
+use super::piece::Piece;
 use super::{board::Board, moves::Move};
 
 #[derive(Debug, Clone)]
@@ -27,13 +30,6 @@ impl GameState {
         self.start_team.next_n(self.turn)
     }
 
-    pub fn get_ambers_for(&self, team: PlayerTeam) -> i32 {
-        match team {
-            PlayerTeam::One => self.ambers.0,
-            PlayerTeam::Two => self.ambers.1,
-        }
-    }
-
     fn increment_ambers_for(&mut self, team: PlayerTeam) {
         match team {
             PlayerTeam::One => self.ambers.0 += 1,
@@ -41,15 +37,58 @@ impl GameState {
         }
     }
 
+    fn piece_dist(coordinates: &Coordinates, piece: &Piece) -> i32 {
+        let diff = coordinates.x - piece.team.start_line();
+        diff.abs()
+    }
+
+    fn evaluate_light_piece_positions(&self) -> GameStateResult {
+        let pieces = &self.board.pieces;
+        let team_one_positions = pieces
+            .iter()
+            .filter(|entry| entry.1.team == PlayerTeam::One)
+            .filter(|entry| entry.1.is_light_piece())
+            .map(|entry| Self::piece_dist(entry.0, entry.1));
+
+        let team_two_positions = pieces
+            .iter()
+            .filter(|entry| entry.1.team == PlayerTeam::Two)
+            .filter(|entry| entry.1.is_light_piece())
+            .map(|entry| Self::piece_dist(entry.0, entry.1));
+
+        let mut team_one_positions_sorted = team_one_positions.collect::<Vec<i32>>();
+        team_one_positions_sorted.sort_by(|a, b| b.cmp(a));
+
+        let mut team_two_positions_sorted = team_two_positions.collect::<Vec<i32>>();
+        team_two_positions_sorted.sort_by(|a, b| b.cmp(a));
+
+        let mut team_two_iter = team_two_positions_sorted.iter();
+        for team_one_position in team_one_positions_sorted.iter() {
+            if let Some(team_two_position) = team_two_iter.next() {
+                let compare_result = team_one_position.cmp(team_two_position);
+                match compare_result {
+                    Ordering::Greater => {
+                        return GameStateResult::Player(PlayerTeam::One)
+                    },
+                    Ordering::Less => {
+                        return GameStateResult::Player(PlayerTeam::Two)
+                    },
+                    Ordering::Equal => {
+                        continue;
+                    },
+                }
+            }
+        }
+
+        GameStateResult::Draw
+    }
+
     pub fn get_result(&self) -> GameStateResult {
         if self.turn >= 59 {
             return match self.ambers {
                 (1, 0) | (2, _) => GameStateResult::Player(PlayerTeam::One),
                 (0, 1) | (_, 2) => GameStateResult::Player(PlayerTeam::Two),
-                (0, 0) | (1, 1) => {
-                    // TODO: check positions of minor pieces?
-                    GameStateResult::Draw
-                },
+                (0, 0) | (1, 1) => self.evaluate_light_piece_positions(),
                 (_, _) => GameStateResult::Nothing,
             };
         }
@@ -57,10 +96,7 @@ impl GameState {
         match self.ambers {
             (2, _) => GameStateResult::Player(PlayerTeam::One),
             (_, 2) => GameStateResult::Player(PlayerTeam::Two),
-            (1, 1) => {
-                // TODO: check positions of minor pieces?
-                GameStateResult::Draw
-            },
+            (1, 1) => self.evaluate_light_piece_positions(),
             (_, _) => GameStateResult::Nothing,
         }
     }

@@ -38,28 +38,34 @@ impl Logic {
 
         log::info!("Current turn: {}", game_state.turn);
         log::info!("Current player: {:?}", game_state.get_current_team());
-        log::info!("Ambers: {:?}", game_state.ambers);
-        log::info!("Current Game State: \n{}", game_state.board);
+        log::info!("Current ambers: {:?}", game_state.ambers);
 
-        let current_result = game_state.get_result();
-        log::info!("Current result: {:?}", current_result);
-        
         let start_time = Instant::now();
         let possible_moves = game_state.calculate_possible_moves(&team);
         let mut rng = thread_rng();
         let sent_move = possible_moves.choose(&mut rng);
 
-        let cloned_sent_move = sent_move.cloned();
+        let cloned_sent_move = sent_move.cloned()?;
 
         let elapsed = start_time.elapsed();
+        log::info!("Calculated move: {:?}", cloned_sent_move);
         log::info!("Needed {:?} to calculate move", elapsed);
-        
-        cloned_sent_move
+
+        match game_state.perform_move(&cloned_sent_move) {
+            Ok(_) => {},
+            Err(error) => {
+                log::error!("Error while trying to perform move on game state: {:?}", error);
+            },
+        }
+
+        log::info!("New Game State: \n{}", game_state.board);
+        log::info!("Result: {:?}", game_state.get_result());
+
+        Some(cloned_sent_move)
     }
 
     fn process_move_request(&mut self, protocol_manager: &mut ProtocolManager) -> ClientState {
         let calculated_move = self.calculate_move();
-        log::info!("Calculated move: {:?}", calculated_move);
         if let Some(sent_move) = calculated_move {
             let state_room_id = self.room_id.as_ref().unwrap();
             let room_id = String::from(state_room_id);

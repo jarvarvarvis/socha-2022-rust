@@ -13,6 +13,13 @@ pub enum PlayerTeam {
 }
 
 impl PlayerTeam {
+    pub fn start_line(&self) -> i32 {
+        match self {
+            PlayerTeam::One => 0,
+            PlayerTeam::Two => 7,
+        }
+    }
+
     pub fn opponent(&self) -> Self {
         match self {
             PlayerTeam::One => PlayerTeam::Two,
@@ -43,7 +50,7 @@ pub enum PieceType {
     Robbe,
 }
 
-pub const MINOR_PIECES: [PieceType; 3] = [
+pub const LIGHT_PIECES: [PieceType; 3] = [
     PieceType::Herzmuschel,
     PieceType::Moewe,
     PieceType::Seestern
