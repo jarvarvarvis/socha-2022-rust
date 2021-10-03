@@ -11,9 +11,34 @@ pub struct GameState {
 
     pub last_move: Option<Move>,
     pub turn: i32,
+
+    pub ambers: (i32, i32),
 }
 
 impl GameState {
+    pub fn get_ambers_for(&self, team: PlayerTeam) -> i32 {
+        match team {
+            PlayerTeam::One => self.ambers.0,
+            PlayerTeam::Two => self.ambers.1,
+        }
+    }
+
+    pub fn get_result(&self) -> Option<PlayerTeam> {
+        if self.turn >= 30 {
+            return None;
+        }
+
+        match self.ambers {
+            (2, _) => Some(PlayerTeam::One),
+            (_, 2) => Some(PlayerTeam::Two),
+            (1, 1) => {
+                // TODO check positions of minor pieces
+                None
+            }
+            (_, _) => None,
+        }
+    }
+
     pub fn can_perform_move(&self, r#move: &Move, team: PlayerTeam) -> bool {
         // Check if position and target position of the move are valid
         let coords_from = r#move.from.clone();
@@ -78,11 +103,28 @@ impl FromDeserializable<'_, State> for GameState {
 
         let turn = deserializable.turn;
 
+        let mut team_one_ambers = 0;
+        let mut team_two_ambers = 0;
+
+        for amber in deserializable.ambers.entries.iter() {
+            match amber.team.team {
+                PlayerTeam::One => {
+                    team_one_ambers = amber.int.value;
+                }
+                PlayerTeam::Two => {
+                    team_two_ambers = amber.int.value;
+                }
+            }
+        }
+
+        let ambers = (team_one_ambers, team_two_ambers);
+
         Ok(Self {
             start_team: start_team.clone(),
             board,
             last_move,
             turn,
+            ambers,
         })
     }
 }
