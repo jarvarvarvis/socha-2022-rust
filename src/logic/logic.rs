@@ -34,6 +34,12 @@ impl Logic {
         let game_state = self.current_game_state.as_ref()?;
         let team = self.own_team.as_ref()?;
 
+        log::info!("Current turn: {}", game_state.turn);
+
+        let current_result = game_state.get_result();
+        log::info!("Current result: {:?}", current_result);
+        log::info!("Ambers: {:?}", game_state.ambers);
+
         let possible_moves = game_state.calculate_possible_moves(&team);
         let mut rng = thread_rng();
         let sent_move = possible_moves.choose(&mut rng);

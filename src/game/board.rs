@@ -1,3 +1,6 @@
+use std::iter::Filter;
+
+use crate::xml::enums::PlayerTeam;
 use crate::xml::server::state::Board as XmlBoard;
 use crate::{
     game::piece::Piece,
@@ -13,6 +16,10 @@ pub struct Board {
 impl Board {
     pub fn get_piece_at(&self, coords: Coordinates) -> Option<&Piece> {
         self.pieces.iter().find(|piece| piece.coordinates == coords)
+    }
+
+    pub fn get_pieces_for_team(&self, team: PlayerTeam) -> impl Iterator<Item = &Piece> {
+        self.pieces.iter().filter(move |piece| piece.team == team)
     }
 }
 

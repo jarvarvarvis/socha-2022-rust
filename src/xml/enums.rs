@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 use crate::util::coordinates::Coordinates;
 
-#[derive(Debug, PartialEq, Deserialize, Clone)]
+#[derive(Debug, PartialEq, Deserialize, Clone, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum PlayerTeam {
     One,
@@ -28,13 +28,19 @@ pub enum PieceColor {
     Red = 2,
 }
 
-#[derive(Debug, PartialEq, Deserialize, Clone)]
+#[derive(Debug, PartialEq, Deserialize, Clone, Eq, PartialOrd, Ord)]
 pub enum PieceType {
     Herzmuschel,
     Moewe,
     Seestern,
     Robbe,
 }
+
+pub const MINOR_PIECES: [PieceType; 3] = [
+    PieceType::Herzmuschel,
+    PieceType::Moewe,
+    PieceType::Seestern
+];
 
 impl PieceType {
     pub fn calculate_offsets(&self, player_team: &PlayerTeam) -> Vec<Coordinates> {
