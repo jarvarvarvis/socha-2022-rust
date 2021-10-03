@@ -31,18 +31,13 @@ impl Logic {
     }
 
     fn calculate_move(&self) -> Option<Move> {
-        if let Some(game_state) = &self.current_game_state {
-            let own_team = &self.own_team;
+        let game_state = self.current_game_state.as_ref()?;
+        let team = self.own_team.as_ref()?;
 
-            if let Some(team) = own_team {
-                let possible_moves = game_state.calculate_possible_moves(team);
-                let mut rng = thread_rng();
-                let sent_move = possible_moves.choose(&mut rng);
-                return sent_move.cloned();
-            }
-        }
-
-        None
+        let possible_moves = game_state.calculate_possible_moves(&team);
+        let mut rng = thread_rng();
+        let sent_move = possible_moves.choose(&mut rng);
+        sent_move.cloned()
     }
 
     fn process_move_request(&mut self, protocol_manager: &mut ProtocolManager) -> ClientState {
