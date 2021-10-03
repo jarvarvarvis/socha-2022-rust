@@ -33,6 +33,10 @@ impl Board {
         let coords = coords.clone();
         self.get_piece_at_mut(coords)
     }
+
+    pub fn get_pieces_for_team(&self, team: PlayerTeam) -> impl Iterator<Item = &Piece> {
+        self.pieces.values().filter(move |piece| piece.team == team)
+    }
 }
 
 impl FromDeserializable<'_, XmlBoard> for Board {
