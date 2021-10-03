@@ -15,6 +15,13 @@ pub struct GameState {
     pub ambers: (i32, i32),
 }
 
+#[derive(Debug, Clone)]
+pub enum GameStateResult {
+    Player(PlayerTeam),
+    Draw,
+    Nothing,
+}
+
 impl GameState {
     pub fn get_current_team(&self) -> PlayerTeam {
         self.start_team.next_n(self.turn)
@@ -34,20 +41,27 @@ impl GameState {
         }
     }
 
-    pub fn get_result(&self) -> Option<PlayerTeam> {
-        if self.turn >= 59 && self.ambers == (0, 0) {
-            // TODO: check positions of minor pieces?
-            return None;
+    pub fn get_result(&self) -> GameStateResult {
+        if self.turn >= 59 {
+            return match self.ambers {
+                (1, 0) | (2, _) => GameStateResult::Player(PlayerTeam::One),
+                (0, 1) | (_, 2) => GameStateResult::Player(PlayerTeam::Two),
+                (0, 0) | (1, 1) => {
+                    // TODO: check positions of minor pieces?
+                    GameStateResult::Draw
+                },
+                (_, _) => GameStateResult::Nothing,
+            };
         }
 
         match self.ambers {
-            (2, 0) | (2, 1) => Some(PlayerTeam::One),
-            (0, 2) | (1, 2) => Some(PlayerTeam::Two),
+            (2, _) => GameStateResult::Player(PlayerTeam::One),
+            (_, 2) => GameStateResult::Player(PlayerTeam::Two),
             (1, 1) => {
                 // TODO: check positions of minor pieces?
-                None
+                GameStateResult::Draw
             },
-            (_, _) => None,
+            (_, _) => GameStateResult::Nothing,
         }
     }
 
