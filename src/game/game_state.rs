@@ -18,7 +18,7 @@ pub struct GameState {
     pub ambers: (i32, i32),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum GameStateResult {
     Player(PlayerTeam),
     Draw,
@@ -96,7 +96,6 @@ impl GameState {
         match self.ambers {
             (2, _) => GameStateResult::Player(PlayerTeam::One),
             (_, 2) => GameStateResult::Player(PlayerTeam::Two),
-            (1, 1) => self.evaluate_light_piece_positions(),
             (_, _) => GameStateResult::Nothing,
         }
     }
