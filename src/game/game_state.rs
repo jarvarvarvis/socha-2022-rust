@@ -86,16 +86,16 @@ impl GameState {
     pub fn get_result(&self) -> GameStateResult {
         if self.turn >= 59 {
             return match self.ambers {
-                (1, 0) | (2, _) => GameStateResult::Player(PlayerTeam::One),
-                (0, 1) | (_, 2) => GameStateResult::Player(PlayerTeam::Two),
+                (1, 0) | (2, _) | (3, _) => GameStateResult::Player(PlayerTeam::One),
+                (0, 1) | (_, 2) | (_, 3) => GameStateResult::Player(PlayerTeam::Two),
                 (0, 0) | (1, 1) => self.evaluate_light_piece_positions(),
                 (_, _) => GameStateResult::Nothing,
             };
         }
 
         match self.ambers {
-            (2, _) => GameStateResult::Player(PlayerTeam::One),
-            (_, 2) => GameStateResult::Player(PlayerTeam::Two),
+            (2, _) | (3, _) => GameStateResult::Player(PlayerTeam::One),
+            (_, 2) | (_, 3) => GameStateResult::Player(PlayerTeam::Two),
             (_, _) => GameStateResult::Nothing,
         }
     }
