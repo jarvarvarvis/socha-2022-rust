@@ -57,10 +57,10 @@ impl GameState {
             .map(|entry| Self::piece_dist(entry.0, entry.1));
 
         let mut team_one_positions_sorted = team_one_positions.collect::<Vec<i32>>();
-        team_one_positions_sorted.sort_by(|a, b| b.cmp(a));
+        team_one_positions_sorted.sort_unstable_by(|a, b| b.cmp(a));
 
         let mut team_two_positions_sorted = team_two_positions.collect::<Vec<i32>>();
-        team_two_positions_sorted.sort_by(|a, b| b.cmp(a));
+        team_two_positions_sorted.sort_unstable_by(|a, b| b.cmp(a));
 
         let mut team_two_iter = team_two_positions_sorted.iter();
         for team_one_position in team_one_positions_sorted.iter() {
