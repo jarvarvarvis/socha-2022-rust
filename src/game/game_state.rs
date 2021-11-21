@@ -193,12 +193,16 @@ impl GameState {
                 }
             }
         }
-	// Otherwise, if the move moves to the opponent's start line:
+	// Otherwise, if the move moves to the opponent's start line and the piece was a light piece:
 	// - remove the moved piece
 	// - increment amber count for the team that performed the move
 	else if move_to.x == team.opponent().start_line() {
-	    self.board.pieces.remove(&move_from);
-	    self.increment_ambers_for(team);
+	    if let Some(moved_piece) = self.board.get_piece_at(&move_from) {
+		if moved_piece.is_light_piece() {
+		    self.board.pieces.remove(&move_from);
+		    self.increment_ambers_for(team);
+		}
+	    }
 	}
         // If there is no piece at the target:
         // - move own piece to the target position
