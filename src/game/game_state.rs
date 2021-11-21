@@ -193,6 +193,13 @@ impl GameState {
                 }
             }
         }
+	// Otherwise, if the move moves to the opponent's start line:
+	// - remove the moved piece
+	// - increment amber count for the team that performed the move
+	else if move_to.x == team.opponent().start_line() {
+	    self.board.pieces.remove(&move_from);
+	    self.increment_ambers_for(team);
+	}
         // If there is no piece at the target:
         // - move own piece to the target position
         else {
