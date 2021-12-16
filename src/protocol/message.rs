@@ -36,7 +36,7 @@ impl ClientSideMessage {
         match self {
             ClientSideMessage::JoinAnyGame => Ok(String::from("<protocol><join />")),
             ClientSideMessage::JoinPreparedGame { reservation } => Ok(format!(
-                "<protocol><joinPrepared reservationCode\"{}\" />",
+                "<protocol><joinPrepared reservationCode=\"{}\" />",
                 reservation
             )),
             ClientSideMessage::Move { sent_move, room_id } => {
